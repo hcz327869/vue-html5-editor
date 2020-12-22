@@ -159,10 +159,20 @@ export default {
         const content = this.$refs.content
         content.innerHTML = this.content
         content.addEventListener('mouseup', this.saveCurrentRange, false)
-        content.addEventListener('keyup', () => {
+        let u = navigator.userAgent
+        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1 // android安卓
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) // ios苹果
+        if (isAndroid) {
+          content.addEventListener('keyup', () => {
+              this.$emit('change', content.innerHTML)
+              this.saveCurrentRange()
+          }, false)
+        } else if (isiOS) {
+          content.addEventListener('input', () => {
             this.$emit('change', content.innerHTML)
             this.saveCurrentRange()
         }, false)
+        }
         content.addEventListener('mouseout', (e) => {
             if (e.target === content) {
                 this.saveCurrentRange()
